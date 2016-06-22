@@ -1,10 +1,10 @@
-# socketio-draw-example
+# socket.io whiteboard drawing example
 
 This is a very basic collaborative whiteboard application using socket.io.
 In order to demonstrate only the very basics I have omitted more advanced features, such as different drawing primitives, undo/redo, history navigation, eraser, etc.
 Currently all drawing operations are cached on the server and transmitted at every client operation, so it can get quite slow for more complicated drawings.
 
-## installation ##
+## Installation ##
 
 Make sure you have [socket.io](http://socket.io/) installed on your machine.
 
@@ -12,7 +12,7 @@ npm install --save express@4.10.2
 <br>
 npm install --save socket.io
 
-## run ##
+## Run ##
 
 On the server side: node server.js
 
