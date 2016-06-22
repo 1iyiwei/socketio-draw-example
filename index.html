@@ -1,0 +1,109 @@
+<html>
+<body>
+
+<canvas id="canvas" width="500" height="300" style="border:1px solid #000000;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+<script src="/socket.io/socket.io.js"></script> 
+
+<script>
+  
+var socket = io();
+
+function onMessage(point) 
+{
+   alert('(' + point.x + ', ' + point.y + ', ' + point.drag + ')');
+}
+  
+socket.on('message', onMessage);
+
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext("2d");
+
+class Point
+{
+    constructor(x, y, drag)
+    {
+        this.x = x;
+        this.y = y;
+        this.drag = drag;
+    }
+}
+
+var paint = false;
+  
+function addClick(x, y, dragging)
+{
+    var point = new Point(x, y, dragging);
+    socket.emit('draw', point);
+}
+
+function redraw(points)
+{
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+  
+    context.strokeStyle = "#df4b26";
+    context.lineJoin = "round";
+    context.lineWidth = 5;
+			
+    for(var i = 0; i < points.length; i++)
+    {		
+        context.beginPath();
+        if(points[i].drag && i)
+        {
+            context.moveTo(points[i-1].x, points[i-1].y);
+        }
+        else
+        {
+            context.moveTo(points[i].x-1, points[i].y-1);
+        }
+        context.lineTo(points[i].x, points[i].y);
+        context.closePath();
+        context.stroke();
+    }
+}
+
+socket.on('redraw', redraw);
+
+var press = function(event) 
+{
+    paint = true;
+    addClick(event.pageX - this.offsetLeft, event.pageY - this.offsetTop, false);
+};
+
+var drag = function(event)
+{ 
+    if(paint)
+    {
+        addClick(event.pageX - this.offsetLeft, event.pageY - this.offsetTop, true);
+    }
+};
+
+var release = function(event)
+{
+    paint = false;
+};
+
+var cancel = function(event)
+{
+    paint = false;
+};
+
+// Add mouse event listeners to canvas element
+canvas.addEventListener("mousedown", press, false);
+canvas.addEventListener("mousemove", drag, false);
+canvas.addEventListener("mouseup", release, false);
+canvas.addEventListener("mouseout", cancel, false);
+
+// Add touch event listeners to canvas element
+canvas.addEventListener("touchstart", press, false);
+canvas.addEventListener("touchmove", drag, false);
+canvas.addEventListener("touchend", release, false);
+canvas.addEventListener("touchcancel", cancel, false);
+
+</script>
+
+</body>
+</html>
+
